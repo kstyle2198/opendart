@@ -13,3 +13,5 @@ wheels/
 
 # folders
 data/
+logs/
+log/
