@@ -1,6 +1,7 @@
 import requests
 import zipfile
 import io
+import httpx
 import xml.etree.ElementTree as ET
 import pandas as pd
 import os
@@ -87,6 +88,7 @@ async def lifespan(app: FastAPI):
     try:
         logger.info("[LifeSpan] Initialize 기업별고유번호 Data")
         app.state.corps_df = initialize_data()
+        app.state.client = httpx.AsyncClient(timeout=10.0)
     except Exception as e:
         # 🔥 초기화 실패하면 서버 죽이는게 맞음 (fail-fast)
         logger.error(f"초기 데이터 로딩 실패: {e}")
@@ -96,6 +98,7 @@ async def lifespan(app: FastAPI):
 
     # shutdown
     app.state.corps_df = None
+    await app.state.client.aclose()
 
 
 app = FastAPI(lifespan=lifespan, version="0.1.1", description="서비스형 OPENDART API")
@@ -124,6 +127,14 @@ def find_corps(corp_name: str):
 
     filtered = corps_df[corps_df["corp_name"].str.contains(corp_name, case=False, na=False)][["corp_name", "corp_code"]]
     return filtered.to_dict(orient="records")
+
+# -----------------------------
+# Routers
+# -----------------------------
+from routers.공시정보 import 공시정보router
+from routers.정기보고서 import 정기보고서router
+app.include_router(공시정보router)
+app.include_router(정기보고서router)
 
 
 if __name__ == "__main__":
