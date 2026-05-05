@@ -135,11 +135,15 @@ from routers.공시정보 import 공시정보router
 from routers.정기보고서 import 정기보고서router
 from routers.재무정보 import 재무정보router
 from routers.지분공시 import 지분공시router
+from routers.주요사항 import 주요사항router
+from routers.증권신고 import 증권신고router
 
 app.include_router(공시정보router)
 app.include_router(정기보고서router)
 app.include_router(재무정보router)
 app.include_router(지분공시router)
+app.include_router(주요사항router)
+app.include_router(증권신고router)
 
 
 if __name__ == "__main__":

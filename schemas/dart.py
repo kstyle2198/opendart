@@ -1,5 +1,5 @@
-from pydantic import BaseModel, Field, field_validator
-from typing import Optional
+from pydantic import BaseModel, Field, field_validator, model_validator
+from datetime import datetime
 
 class 공시검색Request(BaseModel):
     """
@@ -152,3 +152,78 @@ class 지분공시Request(BaseModel):
         corp_code (str): 기업 고유 코드 (예: 01390344)
     """
     corp_code: str = Field("01390344", description="기업 고유 코드")
+
+class 주요사항Request(BaseModel):
+    """
+    주요사항 보고서 주요 정보 조회를 위한 요청 모델
+
+    Attributes:
+        corp_code (str): 기업 고유 코드 (예: 01390344)
+        bgn_de (str): 조회 시작일 (YYYYMMDD)
+        end_de (str): 조회 종료일 (YYYYMMDD)
+
+
+    Validation:
+        - bgn_de 반드시 8자리 연도(YYYYMMDD) 형식이어야 함.
+        - end_de 반드시 8자리 연도(YYYYMMDD) 형식이어야 함.
+    """
+    corp_code: str = Field("01390344", description="기업 고유 코드")
+    bgn_de : str = Field("20250101", description="조회 시작일 (YYYYMMDD)")
+    end_de : str = Field("20251231", description="조회 종료일 (YYYYMMDD)")
+
+    @field_validator("bgn_de", "end_de")
+    @classmethod
+    def validate_date_format(cls, v: str) -> str:
+        try:
+            datetime.strptime(v, "%Y%m%d")
+        except ValueError:
+            raise ValueError("date must be in YYYYMMDD format")
+        return v
+
+    @model_validator(mode="after")
+    def validate_date_range(self):
+        bgn = datetime.strptime(self.bgn_de, "%Y%m%d")
+        end = datetime.strptime(self.end_de, "%Y%m%d")
+
+        if bgn > end:
+            raise ValueError("bgn_de must be earlier than or equal to end_de")
+
+        return self
+    
+
+class 증권신고서Request(BaseModel):
+    """
+    증권신고서 주요 정보 조회를 위한 요청 모델
+
+    Attributes:
+        corp_code (str): 기업 고유 코드 (예: 01390344)
+        bgn_de (str): 조회 시작일 (YYYYMMDD)
+        end_de (str): 조회 종료일 (YYYYMMDD)
+
+
+    Validation:
+        - bgn_de 반드시 8자리 연도(YYYYMMDD) 형식이어야 함.
+        - end_de 반드시 8자리 연도(YYYYMMDD) 형식이어야 함.
+    """
+    corp_code: str = Field("01390344", description="기업 고유 코드")
+    bgn_de : str = Field("20250101", description="조회 시작일 (YYYYMMDD)")
+    end_de : str = Field("20251231", description="조회 종료일 (YYYYMMDD)")
+
+    @field_validator("bgn_de", "end_de")
+    @classmethod
+    def validate_date_format(cls, v: str) -> str:
+        try:
+            datetime.strptime(v, "%Y%m%d")
+        except ValueError:
+            raise ValueError("date must be in YYYYMMDD format")
+        return v
+
+    @model_validator(mode="after")
+    def validate_date_range(self):
+        bgn = datetime.strptime(self.bgn_de, "%Y%m%d")
+        end = datetime.strptime(self.end_de, "%Y%m%d")
+
+        if bgn > end:
+            raise ValueError("bgn_de must be earlier than or equal to end_de")
+
+        return self
