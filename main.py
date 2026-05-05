@@ -133,8 +133,13 @@ def find_corps(corp_name: str):
 # -----------------------------
 from routers.공시정보 import 공시정보router
 from routers.정기보고서 import 정기보고서router
+from routers.재무정보 import 재무정보router
+from routers.지분공시 import 지분공시router
+
 app.include_router(공시정보router)
 app.include_router(정기보고서router)
+app.include_router(재무정보router)
+app.include_router(지분공시router)
 
 
 if __name__ == "__main__":
